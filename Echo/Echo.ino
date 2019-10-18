@@ -8,31 +8,46 @@ ros::Publisher pub("echoed_words", &str_msg);
 
 void echoMessage(const std_msgs::String& yelled_words)
 {
-  String YW;
-  char* EW;
-  std_msgs::String echoed_words;
+  const char* dots = "...";
 
-  //convert input data to string to allow for string operations
-  YW = String(yelled_words.data);
-
-  //Store echoed words in a char array
-  (YW + "..." + YW + "...").toCharArray(EW, 100);
-
+  char* echo_char = yelled_words.data;
+  String yell = String(yelled_words.data);
+  const char* yell_char = yell.c_str();
   
-  echoed_words.data = EW;
+  strcat(echo_char, dots);
+  strcat(echo_char, yell_char);
+  strcat(echo_char, dots);
+  strcat(echo_char, yell_char);
+  strcat(echo_char, dots);
+
+  std_msgs::String echoed_words;
+  echoed_words.data = echo_char;
   pub.publish( &echoed_words );
-  nh.spinOnce();
 }
+
+
+/*
+void echoMessage(const std_msgs::String & yelled_words)
+{
+  pub.publish(&yelled_words);
+}
+*/
+
 ros::Subscriber<std_msgs::String> sub("yelled_words", &echoMessage);
 
 void setup() 
 {
+  nh.initNode();
   nh.subscribe(sub);
   nh.advertise(pub);
 }
 
 void loop() 
 {
+  //str_msg.data = "hello, world";
+  //pub.publish( &str_msg );
+  nh.spinOnce();
+  delay(50);
   // put your main code here, to run repeatedly:
 
 }
